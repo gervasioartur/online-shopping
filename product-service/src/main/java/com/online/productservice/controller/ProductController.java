@@ -25,12 +25,12 @@ public class ProductController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<ProductResponse> getProducts() {
-       List<Product> list = this.service.getAllProducts();
-       //map(product -> this.mapToProductResponse(product)).toList(); -> other way
-      return list.stream().map(this::mapToProductResponse).toList();
+        List<Product> list = this.service.getAllProducts();
+        //map(product -> this.mapToProductResponse(product)).toList(); -> other way
+        return list.stream().map(this::mapToProductResponse).toList();
     }
 
-    private ProductResponse mapToProductResponse(Product product){
+    private ProductResponse mapToProductResponse(Product product) {
         return ProductResponse.builder()
                 .id(product.getId())
                 .name(product.getName())

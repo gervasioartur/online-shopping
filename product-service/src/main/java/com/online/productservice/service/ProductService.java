@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -26,7 +25,7 @@ public class ProductService {
         log.info("Product saved successfully: {}", product.getId());
     }
 
-    public List<Product> getAllProducts(){
+    public List<Product> getAllProducts() {
         return repository.findAll();
     }
 }
