@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class productService {
+public class ProductService {
     private final ProductRepository repository;
 
     public void createProduct(ProductRequest request) {
