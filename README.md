@@ -8,4 +8,4 @@
     # Notification service - Can send notifications, after product or is placed.
     
     ## Note: 
-        # Order service, inventory service  and  notification service are goig to interact with each product other.
+        # Order service, inventory service  and  notification service are going to interact with each product other.
