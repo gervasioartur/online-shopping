@@ -1,6 +1,5 @@
 package com.online.productservice;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.assertions.Assertions;
 import com.online.productservice.dto.ProductRequest;
@@ -25,7 +24,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest
 @Testcontainers
 @AutoConfigureMockMvc
-public class ProductServiceApplicationTests {
+public class AppTests {
 
   private final String URL = "/api/product";
 
