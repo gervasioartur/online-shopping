@@ -24,7 +24,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest
 @Testcontainers
 @AutoConfigureMockMvc
-public class AppTests {
+public class ProductServiceApplicationTests {
 
   private final String URL = "/api/product";
 
