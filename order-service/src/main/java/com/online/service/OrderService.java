@@ -1,5 +1,6 @@
 package com.online.service;
 
+import com.online.dto.InventoryResponse;
 import com.online.dto.OrderLineItemsDTO;
 import com.online.dto.OrderRequest;
 import com.online.model.Order;
@@ -9,7 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,6 +22,7 @@ import java.util.UUID;
 public class OrderService {
     private final ModelMapper mapper;
     private final OrderRepository repository;
+    private final WebClient webClient;
 
     public void placeOrder(OrderRequest request) {
         String orderNumber = UUID.randomUUID().toString();
@@ -33,15 +37,32 @@ public class OrderService {
                 .orderLineItems(orderLineItems)
                 .build();
 
-        this.repository.save(order);
+        List<String>  skuCodes =  order.getOrderLineItems().stream().map(OrderLineItems::getSkuCode).toList();
+
+        InventoryResponse inventoryResponseArray[] =  webClient
+                .get()
+                .uri("http://localhost:8081/api/inventory",
+                        uriBuilder -> uriBuilder
+                                .queryParam("skuCodes", skuCodes)
+                                .build()
+                )
+                .retrieve()
+                .bodyToMono(InventoryResponse[].class)
+                .block();
+
+        boolean allProductInStock = Arrays.stream(inventoryResponseArray).allMatch(InventoryResponse::getIsnInStock);
+
+        if(allProductInStock)
+            this.repository.save(order);
+        else
+            throw new IllegalArgumentException("The product ins not in stock, please try again later");
     }
 
     private OrderLineItems mapToDto(OrderLineItemsDTO orderLineItemsDTO) {
-        OrderLineItems orderLineItems = OrderLineItems.builder()
+        return OrderLineItems.builder()
                 .skuCode(orderLineItemsDTO.getSkuCode())
                 .price(orderLineItemsDTO.getPrice())
                 .quantity(orderLineItemsDTO.getQuantity())
                 .build();
-        return orderLineItems;
     }
 }
