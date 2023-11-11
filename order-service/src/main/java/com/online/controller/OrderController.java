@@ -3,7 +3,6 @@ package com.online.controller;
 import com.online.dto.OrderRequest;
 import com.online.service.OrderService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,9 +14,9 @@ public class OrderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    private String placeOrder(@RequestBody OrderRequest request){
+    private String placeOrder(@RequestBody OrderRequest request) {
         service.placeOrder(request);
-        return  "Order placed successfully";
+        return "Order placed successfully";
     }
 
 }
