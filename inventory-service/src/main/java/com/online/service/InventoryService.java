@@ -1,7 +1,7 @@
 package com.online.service;
 
-import com.online.repository.InventoryRepository;
 import com.online.dto.InventoryResponse;
+import com.online.repository.InventoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,10 +18,10 @@ public class InventoryService {
         return this.repository.findBySkuCodeIn(skuCodes)
                 .stream()
                 .map(inventory ->
-                    InventoryResponse.builder()
-                            .skuCode(inventory.getSkuCode())
-                            .isnInStock(inventory.getQuantity() > 0)
-                            .build()
+                        InventoryResponse.builder()
+                                .skuCode(inventory.getSkuCode())
+                                .isnInStock(inventory.getQuantity() > 0)
+                                .build()
                 ).toList();
     }
 }
