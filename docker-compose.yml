@@ -1,6 +1,6 @@
 version: '3.1'
 services:
-# PRODUCT DATABASE
+  # PRODUCT DATABASE
   product-database:
     container_name: product-database
     image: mongo
@@ -30,7 +30,7 @@ services:
       - ./_dist/inventory_database:/data/postgres
     command: -p 5431
 
-# ORDER DATABASE
+  # ORDER DATABASE
   order_database:
     image: postgres
     container_name: order_database

@@ -9,8 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class InventoryService {
     private final InventoryRepository repository;
+
     @Transactional(readOnly = true)
-    public boolean isInStock(String skuCode){
+    public boolean isInStock(String skuCode) {
         return this.repository.findBySkuCode(skuCode).isPresent();
     }
 }
