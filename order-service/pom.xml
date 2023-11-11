@@ -8,8 +8,7 @@
     <version>1.0.0</version>
   </parent>
 
-  
-  <groupId>com.online</groupId>
+
   <artifactId>order-service</artifactId>
   <version>1.0.0</version>
   <name>order-service</name>
