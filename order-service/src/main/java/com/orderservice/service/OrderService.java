@@ -37,9 +37,9 @@ public class OrderService {
                 .orderLineItems(orderLineItems)
                 .build();
 
-        List<String>  skuCodes =  order.getOrderLineItems().stream().map(OrderLineItems::getSkuCode).toList();
+        List<String> skuCodes = order.getOrderLineItems().stream().map(OrderLineItems::getSkuCode).toList();
 
-        InventoryResponse inventoryResponseArray[] =  webClientBuilder.build()
+        InventoryResponse inventoryResponseArray[] = webClientBuilder.build()
                 .get()
                 .uri("http://inventory-service/api/inventory",
                         uriBuilder -> uriBuilder
@@ -52,7 +52,7 @@ public class OrderService {
 
         boolean allProductInStock = Arrays.stream(inventoryResponseArray).allMatch(InventoryResponse::getIsnInStock);
 
-        if(allProductInStock)
+        if (allProductInStock)
             this.repository.save(order);
         else
             throw new IllegalArgumentException("The product ins not in stock, please try again later");
