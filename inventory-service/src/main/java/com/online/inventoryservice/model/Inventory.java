@@ -1,4 +1,4 @@
-package com.online.model;
+package com.online.inventoryservice.model;
 
 
 import jakarta.persistence.*;
