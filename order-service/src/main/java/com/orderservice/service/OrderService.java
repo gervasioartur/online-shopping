@@ -1,11 +1,11 @@
-package com.online.service;
+package com.orderservice.service;
 
-import com.online.dto.InventoryResponse;
-import com.online.dto.OrderLineItemsDTO;
-import com.online.dto.OrderRequest;
-import com.online.model.Order;
-import com.online.model.OrderLineItems;
-import com.online.repository.OrderRepository;
+import com.orderservice.dto.InventoryResponse;
+import com.orderservice.dto.OrderLineItemsDTO;
+import com.orderservice.dto.OrderRequest;
+import com.orderservice.model.Order;
+import com.orderservice.model.OrderLineItems;
+import com.orderservice.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,7 @@ import java.util.UUID;
 public class OrderService {
     private final ModelMapper mapper;
     private final OrderRepository repository;
-    private final WebClient webClient;
+    private final WebClient.Builder webClientBuilder;
 
     public void placeOrder(OrderRequest request) {
         String orderNumber = UUID.randomUUID().toString();
@@ -39,9 +39,9 @@ public class OrderService {
 
         List<String>  skuCodes =  order.getOrderLineItems().stream().map(OrderLineItems::getSkuCode).toList();
 
-        InventoryResponse inventoryResponseArray[] =  webClient
+        InventoryResponse inventoryResponseArray[] =  webClientBuilder.build()
                 .get()
-                .uri("http://localhost:8081/api/inventory",
+                .uri("http://inventory-service/api/inventory",
                         uriBuilder -> uriBuilder
                                 .queryParam("skuCodes", skuCodes)
                                 .build()

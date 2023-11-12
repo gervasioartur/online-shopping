@@ -1,6 +1,6 @@
-package com.online.repository;
+package com.orderservice.repository;
 
-import com.online.model.Order;
+import com.orderservice.model.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
