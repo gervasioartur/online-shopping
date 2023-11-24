@@ -6,6 +6,7 @@ import com.orderservice.dto.OrderRequest;
 import com.orderservice.model.Order;
 import com.orderservice.model.OrderLineItems;
 import com.orderservice.repository.OrderRepository;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -17,14 +18,13 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class OrderService {
     private final ModelMapper mapper;
     private final OrderRepository repository;
     private final WebClient.Builder webClientBuilder;
 
-    public void placeOrder(OrderRequest request) {
+    public String placeOrder(OrderRequest request) {
         String orderNumber = UUID.randomUUID().toString();
         List<OrderLineItems> orderLineItems = request.getOrderLineItemsDTOList()
                 .stream()
@@ -52,9 +52,10 @@ public class OrderService {
 
         boolean allProductInStock = Arrays.stream(inventoryResponseArray).allMatch(InventoryResponse::getIsnInStock);
 
-        if (allProductInStock)
+        if (allProductInStock) {
             this.repository.save(order);
-        else
+            return "Order placed successfully";
+        } else
             throw new IllegalArgumentException("The product ins not in stock, please try again later");
     }
 
