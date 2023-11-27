@@ -33,6 +33,15 @@ services:
     depends_on:
       - keycloak-mysql
 
+  # zipkin configuration
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    ports:
+      - "9411:9411"
+    expose:
+      - "9411"
+
   # PRODUCT DATABASE
   product-database:
     container_name: product-database
@@ -74,11 +83,11 @@ services:
       - POSTGRES_PASSWORD=0199
       - PGDATA=/data/postgres
     ports:
-      - "5432:5432"
+      - "5430:5430"
     expose:
-      - "5432"
+      - "5430"
     volumes:
       - ./_dist/order_database:/data/postgres
-    command: -p 5432
+    command: -p 5430
 
 
