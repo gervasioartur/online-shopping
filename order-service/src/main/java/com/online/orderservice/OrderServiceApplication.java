@@ -1,4 +1,4 @@
-package com.orderservice;
+package com.online.orderservice;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;

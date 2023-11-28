@@ -1,7 +1,7 @@
-package com.orderservice.controller;
+package com.online.orderservice.controller;
 
-import com.orderservice.dto.OrderRequest;
-import com.orderservice.service.OrderService;
+import com.online.orderservice.dto.OrderRequest;
+import com.online.orderservice.service.OrderService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
