@@ -72,8 +72,8 @@ services:
       - "9411"
 
   # PRODUCT DATABASE
-  product-database:
-    container_name: product-database
+  product_database:
+    container_name: product_database
     image: mongo
     restart: unless-stopped
     ports:
@@ -81,7 +81,7 @@ services:
     expose:
       - "27017"
     volumes:
-      - ./_dist/product-database-data:/data/db
+      - ./_dist/product_database-data:/data/db
 
   # INVENTORY DATABASE
   inventory_database:
@@ -120,3 +120,77 @@ services:
     command: -p 5430
 
 
+  # Eureka server
+  discovery-server:
+    image: gervasioartur/discovery-server:latest
+    container_name: discovery-server
+    ports:
+      - "8761:8761"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - zipkin
+
+  # Gateway
+  api-gateway:
+    image: gervasioartur/api-gateway:latest
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    expose:
+      - "8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY= TRACE
+    depends_on:
+      - zipkin
+      - discovery-server
+      - keycloak
+
+  # Inventory service
+  inventory-service:
+    container_name: inventory-service
+    image: gervasioartur/inventory-service:latest
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://inventory_database:5431/inventory_database
+    depends_on:
+      - inventory_database
+      - discovery-server
+      - api-gateway
+
+  # Notification service
+  notification-service:
+    container_name: notification-service
+    image: gervasioartur/notification-service:latest
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - zipkin
+      - broker
+      - discovery-server
+      - api-gateway
+
+  # Order service
+  order-service:
+    container_name: order-service
+    image: gervasioartur/order-service:latest
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - order_database
+      - broker
+      - zipkin
+      - discovery-server
+      - api-gateway
+
+  # Product service
+  product-service:
+    container_name: product-service
+    image: gervasioartur/product-service:latest
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - product_database
+      - discovery-server
+      - api-gateway
