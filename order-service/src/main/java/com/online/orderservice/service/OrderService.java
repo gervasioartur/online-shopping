@@ -6,8 +6,8 @@ import com.online.orderservice.dto.InventoryResponse;
 import com.online.orderservice.dto.OrderLineItemsDTO;
 import com.online.orderservice.dto.OrderRequest;
 import com.online.orderservice.event.OrderPlaceEvent;
-import com.online.orderservice.model.OrderLineItems;
 import com.online.orderservice.model.Order;
+import com.online.orderservice.model.OrderLineItems;
 import com.online.orderservice.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,34 +50,34 @@ public class OrderService {
 
         log.info("Calling inventory service");
 
-       Span inventoryServiceLookUp = this.tracer.nextSpan().name("InventoryServiceLookUp");
+        Span inventoryServiceLookUp = this.tracer.nextSpan().name("InventoryServiceLookUp");
 
-       try(Tracer.SpanInScope spanInScope = this.tracer.withSpanInScope(inventoryServiceLookUp.start())){
-           InventoryResponse inventoryResponseArray[] = webClientBuilder.build()
-                   .get()
-                   .uri("http://inventory-service/api/inventory",
-                           uriBuilder -> uriBuilder
-                                   .queryParam("skuCodes", skuCodes)
-                                   .build()
-                   )
-                   .retrieve()
-                   .bodyToMono(InventoryResponse[].class)
-                   .block();
+        try (Tracer.SpanInScope spanInScope = this.tracer.withSpanInScope(inventoryServiceLookUp.start())) {
+            InventoryResponse inventoryResponseArray[] = webClientBuilder.build()
+                    .get()
+                    .uri("http://inventory-service/api/inventory",
+                            uriBuilder -> uriBuilder
+                                    .queryParam("skuCodes", skuCodes)
+                                    .build()
+                    )
+                    .retrieve()
+                    .bodyToMono(InventoryResponse[].class)
+                    .block();
 
-           boolean allProductInStock = Arrays.stream(inventoryResponseArray).allMatch(InventoryResponse::getIsnInStock);
+            boolean allProductInStock = Arrays.stream(inventoryResponseArray).allMatch(InventoryResponse::getIsnInStock);
 
-           if (allProductInStock) {
-               this.repository.save(order);
-               kafkaTemplate.send("notificationTopic",
-                                OrderPlaceEvent.builder()
+            if (allProductInStock) {
+                this.repository.save(order);
+                kafkaTemplate.send("notificationTopic",
+                        OrderPlaceEvent.builder()
                                 .orderNumber(order.getOrderNumber())
                                 .build());
-               return "Order placed successfully";
-           } else
-               throw new IllegalArgumentException("The product ins not in stock, please try again later");
-       }finally {
-           inventoryServiceLookUp.finish();
-       }
+                return "Order placed successfully";
+            } else
+                throw new IllegalArgumentException("The product ins not in stock, please try again later");
+        } finally {
+            inventoryServiceLookUp.finish();
+        }
     }
 
     private OrderLineItems mapToDto(OrderLineItemsDTO orderLineItemsDTO) {
