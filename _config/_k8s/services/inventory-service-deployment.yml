@@ -9,7 +9,7 @@ spec:
   selector:
     matchLabels:
       app: inventory-service
-  strategy: {}
+  strategy: { }
   template:
     metadata:
 
@@ -19,14 +19,14 @@ spec:
       containers:
         - env:
             - name: SPRING_DATASOURCE_URL
-              value: jdbc:postgresql://postgres-inventory:5431/inventory-service
+              value: jdbc:postgresql://inventory-database:5431/inventory-database
             - name: SPRING_PROFILES_ACTIVE
               value: docker
-          image: saiupadhyayula007/inventory-service:latest
+          image: gervasioartur/inventory-service:latest
           name: inventory-service
-          resources: {}
+          resources: { }
       restartPolicy: Always
-status: {}
+status: { }
 ---
 apiVersion: v1
 kind: Service
@@ -42,4 +42,4 @@ spec:
   selector:
     app: inventory-service
 status:
-  loadBalancer: {}
+  loadBalancer: { }

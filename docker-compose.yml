@@ -72,8 +72,8 @@ services:
       - "9411"
 
   # PRODUCT DATABASE
-  product_database:
-    container_name: product_database
+  product-database:
+    container_name: product-database
     image: mongo
     restart: unless-stopped
     ports:
@@ -81,15 +81,15 @@ services:
     expose:
       - "27017"
     volumes:
-      - ./_dist/product_database-data:/data/db
+      - ./_dist/product-database-data:/data/db
 
   # INVENTORY DATABASE
-  inventory_database:
+  inventory-database:
     image: postgres
-    container_name: inventory_database
+    container_name: inventory-database
     restart: unless-stopped
     environment:
-      - POSTGRES_DB=inventory_database
+      - POSTGRES_DB=inventory-database
       - POSTGRES_USER=inventory_user
       - POSTGRES_PASSWORD=0199
       - PGDATA=/data/postgres
@@ -98,16 +98,16 @@ services:
     expose:
       - "5431"
     volumes:
-      - ./_dist/inventory_database:/data/postgres
+      - ./_dist/inventory-database:/data/postgres
     command: -p 5431
 
   # ORDER DATABASE
-  order_database:
+  order-database:
     image: postgres
-    container_name: order_database
+    container_name: order-database
     restart: unless-stopped
     environment:
-      - POSTGRES_DB=order_database
+      - POSTGRES_DB=order-database
       - POSTGRES_USER=order_user
       - POSTGRES_PASSWORD=0199
       - PGDATA=/data/postgres
@@ -116,7 +116,7 @@ services:
     expose:
       - "5430"
     volumes:
-      - ./_dist/order_database:/data/postgres
+      - ./_dist/order-database:/data/postgres
     command: -p 5430
 
 
@@ -157,9 +157,9 @@ services:
       - "8081"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://inventory_database:5431/inventory_database
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://inventory-database:5431/inventory-database
     depends_on:
-      - inventory_database
+      - inventory-database
       - discovery-server
       - api-gateway
 
@@ -190,7 +190,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
-      - order_database
+      - order-database
       - broker
       - zipkin
       - discovery-server
@@ -207,7 +207,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
-      - product_database
+      - product-database
       - discovery-server
       - api-gateway
 

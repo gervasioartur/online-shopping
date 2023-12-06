@@ -2,54 +2,100 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: keycloak-mysql
-  name: keycloak-mysql
+    app: keycloak
+  name: keycloak
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: keycloak-mysql
+      app: keycloak
   strategy:
     type: Recreate
   template:
     metadata:
+
       labels:
-        app: keycloak-mysql
+        app: keycloak
     spec:
       containers:
-        - env:
-            - name: MYSQL_DATABASE
+        - args:
+            - start-dev
+            - --http-port 9091
+            - --import-realm
+          env:
+            - name: DB_ADDR
+              value: mysql
+            - name: DB_DATABASE
               value: keycloak
-            - name: MYSQL_PASSWORD
+            - name: DB_PASSWORD
               value: password
-            - name: MYSQL_ROOT_PASSWORD
-              value: root
-            - name: MYSQL_USER
+            - name: DB_USER
               value: keycloak
-          image: mysql:5.7
-          name: keycloak-mysql
-          resources: {}
+            - name: DB_VENDOR
+              value: MYSQL
+            - name: KEYCLOAK_ADMIN
+              value: admin
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              value: admin
+          image: quay.io/keycloak/keycloak:18.0.0
+          name: keycloak
+          ports:
+            - containerPort: 9091
+          resources: { }
           volumeMounts:
-            - mountPath: /var/lib/mysql
-              name: keycloak-mysql-claim0
+            - mountPath: /opt/keycloak/data/import/
+              name: keycloak-claim0
       restartPolicy: Always
       volumes:
-        - name: keycloak-mysql-claim0
+        - name: keycloak-claim0
           persistentVolumeClaim:
-            claimName: keycloak-mysql-claim0
-status: {}
+            claimName: keycloak-claim0
+status: { }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: keycloak
+  name: keycloak
+spec:
+  ports:
+    - name: "9091"
+      port: 9091
+      targetPort: 9091
+  selector:
+    app: keycloak
+status:
+  loadBalancer: { }
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   creationTimestamp: null
   labels:
-    app: keycloak-mysql-claim0
-  name: keycloak-mysql-claim0
+    app: keycloak-claim0
+  name: keycloak-claim0
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 100Mi
-status: {}
+status: { }
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: auth-ingress
+spec:
+  rules:
+    - host: "auth.localtest.me"
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: keycloak
+                port:
+                  number: 9091

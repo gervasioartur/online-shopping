@@ -2,62 +2,74 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: product_database
-  name: product_database
+    app: order-database
+  name: order-database
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: product_database
+      app: order-database
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: product_database
+        app: order-database
     spec:
       containers:
-        - image: mongo:4.4.14-rc0-focal
-          name: product_database
+        - args:
+            - -p
+            - "5430"
+          image: postgres
+          name: order-database
           ports:
-            - containerPort: 27017
-          resources: {}
+            - containerPort: 5430
+          env:
+            - name: PGDATA
+              value: "/data/postgres"
+            - name: POSTGRES_DB
+              value: "order-database"
+            - name: POSTGRES_PASSWORD
+              value: "0199"
+            - name: POSTGRES_USER
+              value: "order_user"
+          resources: { }
           volumeMounts:
-            - mountPath: /data/db
-              name: product_database-claim0
+            - mountPath: /data/postgres
+              name: order-database-claim0
       restartPolicy: Always
       volumes:
-        - name: product_database-claim0
+        - name: order-database-claim0
           persistentVolumeClaim:
-            claimName: product_database-claim0
-status: {}
+            claimName: order-database-claim0
+status: { }
 ---
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: product_database
-  name: product_database
+    app: order-database
+  name: order-database
 spec:
   ports:
-    - name: "27017"
-      port: 27017
-      targetPort: 27017
+    - name: "5430"
+      port: 5430
+      targetPort: 5430
   selector:
-    app: product_database
+    app: order-database
 status:
-  loadBalancer: {}
+  loadBalancer: { }
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   labels:
-    app: product_database-claim0
-  name: product_database-claim0
+    app: order-database-claim0
+  name: order-database-claim0
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 100Mi
-status: {}
+status: { }

@@ -9,7 +9,7 @@ spec:
   selector:
     matchLabels:
       app: discovery-server
-  strategy: {}
+  strategy: { }
   template:
     metadata:
 
@@ -24,9 +24,9 @@ spec:
           name: discovery-server
           ports:
             - containerPort: 8761
-          resources: {}
+          resources: { }
       restartPolicy: Always
-status: {}
+status: { }
 ---
 apiVersion: v1
 kind: Service
@@ -42,4 +42,4 @@ spec:
   selector:
     app: discovery-server
 status:
-  loadBalancer: {}
+  loadBalancer: { }

@@ -22,3 +22,39 @@
     docker stop product-service order-service notification-service inventory-service api-gateway discovery-server
     docker rm product-service order-service notification-service inventory-service api-gateway discovery-server
     docker rmi gervasioartur/product-service gervasioartur/order-service gervasioartur/notification-service gervasioartur/inventory-service gervasioartur/api-gateway gervasioartur/discovery-server
+
+# Deploying infra  in kubernetes cluster
+
+    kubectl apply -f ./_config/_k8s/infra/zookeeper-deployment.yaml
+    kubectl apply -f ./_config/_k8s/infra/broker-deployment.yaml
+    kubectl apply -f ./_config/_k8s/infra/keycloak-mysql-deployment.yaml
+    kubectl apply -f ./_config/_k8s/infra/keycloak-deployment.yaml
+    kubectl apply -f ./_config/_k8s/infra/zipkin-deployment.yaml
+
+# Deploying databases  in kubernetes cluster
+
+    kubectl apply -f ./_config/_k8s/infra/product-database-deployment.yaml
+    kubectl apply -f ./_config/_k8s/infra/inventory-database-deployment.yaml
+    kubectl apply -f ./_config/_k8s/infra/order-database-deployment.yaml
+
+# Deploying services  in kubernetes cluster
+
+    kubectl apply -f ./_config/_k8s/infra/discovery-server-deployment.yaml
+    kubectl apply -f ./_config/_k8s/infra/api-gateway-deployment.yaml
+
+    kubectl apply -f ./_config/_k8s/services/inventory-service-deployment.yml
+    kubectl apply -f ./_config/_k8s/services/notification-service-deployment.yml
+    kubectl apply -f ./_config/_k8s/services/order-service-deployment.yml
+    kubectl apply -f ./_config/_k8s/services/product-service-deployment.yml
+
+# Deploying last configurantions  in kubernetes cluster
+
+    kubectl apply -f ./_config/_k8s/infra/prometheus-deployment.yaml
+    kubectl apply -f ./_config/_k8s/infra/grafana-deployment.yaml
+
+
+
+
+
+
+

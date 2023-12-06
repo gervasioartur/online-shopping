@@ -2,44 +2,29 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: discovery-server
-  name: discovery-server
+    app: api-gateway
+  name: api-gateway
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: discovery-server
-  strategy: {}
+      app: api-gateway
+  strategy: { }
   template:
     metadata:
-
       labels:
-        app: discovery-server
+        app: api-gateway
     spec:
       containers:
         - env:
+            - name: LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY
+              value: 'TRACE'
             - name: SPRING_PROFILES_ACTIVE
               value: docker
-          image: gervasioartur/discovery-server:latest
-          name: discovery-server
+          image: gervasioartur/api-gateway:latest
+          name: api-gateway
           ports:
-            - containerPort: 8761
-          resources: {}
+            - containerPort: 8080
+          resources: { }
       restartPolicy: Always
-status: {}
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: discovery-server
-  name: discovery-server
-spec:
-  ports:
-    - name: "8761"
-      port: 8761
-      targetPort: 8761
-  selector:
-    app: discovery-server
-status:
-  loadBalancer: {}
+status: { }

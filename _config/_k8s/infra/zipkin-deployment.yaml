@@ -1,69 +1,42 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    kompose.cmd: F:\tools\kompose.exe convert
-    kompose.version: 1.26.1 (a9d05d509)
-  creationTimestamp: null
   labels:
-    app: prometheus
-  name: prometheus
+    app: zipkin
+  name: zipkin
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: prometheus
-  strategy:
-    type: Recreate
+      app: zipkin
+  strategy: { }
   template:
     metadata:
 
       labels:
-        app: prometheus
+        app: zipkin
     spec:
       containers:
-        - image: prom/prometheus:v2.37.1
-          name: prometheus
+        - image: openzipkin/zipkin
+          name: zipkin
           ports:
-            - containerPort: 9090
-          resources: {}
-          volumeMounts:
-            - mountPath: /etc/prometheus/prometheus.yml
-              name: prometheus-claim0
+            - containerPort: 9411
+          resources: { }
       restartPolicy: Always
-      volumes:
-        - name: prometheus-claim0
-          persistentVolumeClaim:
-            claimName: prometheus-claim0
-status: {}
+status: { }
 ---
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: prometheus
-  name: prometheus
+    app: zipkin
+  name: zipkin
 spec:
   ports:
-    - name: "9090"
-      port: 9090
-      targetPort: 9090
+    - name: "9411"
+      port: 9411
+      targetPort: 9411
   selector:
-    app: prometheus
+    app: zipkin
 status:
-  loadBalancer: {}
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  creationTimestamp: null
-  labels:
-    app: prometheus-claim0
-  name: prometheus-claim0
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 100Mi
-status: {}
+  loadBalancer: { }

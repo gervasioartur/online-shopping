@@ -1,75 +1,69 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    kompose.cmd: F:\tools\kompose.exe convert
+    kompose.version: 1.26.1 (a9d05d509)
+  creationTimestamp: null
   labels:
-    app: order_database
-  name: order_database
+    app: prometheus
+  name: prometheus
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: order_database
+      app: prometheus
   strategy:
     type: Recreate
   template:
     metadata:
+
       labels:
-        app: order_database
+        app: prometheus
     spec:
       containers:
-        - args:
-            - -p
-            - "5430"
-          env:
-            - name: PGDATA
-              value: /data/postgres
-            - name: POSTGRES_DB
-              value: order_database
-            - name: POSTGRES_PASSWORD
-              value: 0199
-            - name: POSTGRES_USER
-              value: order_user
-          image: postgres
-          name: order_database
+        - image: prom/prometheus:v2.37.1
+          name: prometheus
           ports:
-            - containerPort: 5430
-          resources: {}
+            - containerPort: 9090
+          resources: { }
           volumeMounts:
-            - mountPath: /data/postgres
-              name: order_database-claim0
+            - mountPath: /etc/prometheus/prometheus.yml
+              name: prometheus-claim0
       restartPolicy: Always
       volumes:
-        - name: order_database-claim0
+        - name: prometheus-claim0
           persistentVolumeClaim:
-            claimName: order_database-claim0
-status: {}
+            claimName: prometheus-claim0
+status: { }
 ---
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: order_database
-  name: order_database
+    app: prometheus
+  name: prometheus
 spec:
   ports:
-    - name: "5430"
-      port: 5430
-      targetPort: 5430
+    - name: "9090"
+      port: 9090
+      targetPort: 9090
   selector:
-    app: order_database
+    app: prometheus
 status:
-  loadBalancer: {}
+  loadBalancer: { }
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
+  creationTimestamp: null
   labels:
-    app: order_database-claim0
-  name: order_database-claim0
+    app: prometheus-claim0
+  name: prometheus-claim0
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 100Mi
-status: {}
+status: { }

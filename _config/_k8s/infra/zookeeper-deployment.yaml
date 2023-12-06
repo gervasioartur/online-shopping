@@ -1,42 +1,39 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  name: zookeeper
   labels:
-    app: zipkin
-  name: zipkin
+    app: zookeeper
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: zipkin
-  strategy: {}
+      app: zookeeper
   template:
     metadata:
-
       labels:
-        app: zipkin
+        app: zookeeper
     spec:
       containers:
-        - image: openzipkin/zipkin
-          name: zipkin
-          ports:
-            - containerPort: 9411
-          resources: {}
-      restartPolicy: Always
-status: {}
+        - env:
+            - name: ZOOKEEPER_CLIENT_PORT
+              value: "2181"
+            - name: ZOOKEEPER_TICK_TIME
+              value: "2000"
+          image: confluentinc/cp-zookeeper:7.0.1
+          name: zookeeper
 ---
 apiVersion: v1
 kind: Service
 metadata:
+  name: zookeeper
   labels:
-    app: zipkin
-  name: zipkin
+    app: zookeeper
 spec:
-  ports:
-    - name: "9411"
-      port: 9411
-      targetPort: 9411
   selector:
-    app: zipkin
+    app: zookeeper
+  ports:
+    - port: 2181
+      targetPort: 2181
 status:
-  loadBalancer: {}
+  loadBalancer: { }

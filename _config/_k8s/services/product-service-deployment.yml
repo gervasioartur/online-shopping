@@ -2,44 +2,42 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: order-service
-  name: order-service
+    app: product-service
+  name: product-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: order-service
-  strategy: {}
+      app: product-service
+  strategy: { }
   template:
     metadata:
 
       labels:
-        app: order-service
+        app: product-service
     spec:
       containers:
         - env:
-            - name: SPRING_DATASOURCE_URL
-              value: jdbc:postgresql://order_database:5430/order_database
             - name: SPRING_PROFILES_ACTIVE
               value: docker
-          image: saiupadhyayula007/order-service:latest
-          name: order-service
-          resources: {}
+          image: gervasioartur/product-service:latest
+          name: product-service
+          resources: { }
       restartPolicy: Always
-status: {}
+status: { }
 ---
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: order-service
-  name: order-service
+    app: product-service
+  name: product-service
 spec:
   ports:
-    - name: "80"
-      port: 80
-      targetPort: 9193
+    - name: "8084"
+      port: 8084
+      targetPort: 8084
   selector:
-    app: order-service
+    app: product-service
 status:
-  loadBalancer: {}
+  loadBalancer: { }

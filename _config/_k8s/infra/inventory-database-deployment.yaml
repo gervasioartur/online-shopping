@@ -2,62 +2,72 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: product_database
-  name: product_database
+    app: inventory-database
+  name: inventory-database
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: product_database
-  strategy:
-    type: Recreate
+      app: inventory-database
   template:
     metadata:
       labels:
-        app: product_database
+        app: inventory-database
     spec:
       containers:
-        - image: mongo:4.4.14-rc0-focal
-          name: product_database
+        - args:
+            - -p
+            - "5431"
+          image: postgres
+          name: inventory-database
           ports:
-            - containerPort: 27017
-          resources: {}
+            - containerPort: 5431
+          env:
+            - name: PGDATA
+              value: "/data/postgres"
+            - name: POSTGRES_DB
+              value: "inventory-database"
+            - name: POSTGRES_PASSWORD
+              value: "0199"
+            - name: POSTGRES_USER
+              value: "inventory_user"
+          resources: { }
           volumeMounts:
-            - mountPath: /data/db
-              name: product_database-claim0
+            - mountPath: /data/postgres
+              name: inventory-database-claim0
       restartPolicy: Always
       volumes:
-        - name: product_database-claim0
+        - name: inventory-database-claim0
           persistentVolumeClaim:
-            claimName: product_database-claim0
-status: {}
+            claimName: inventory-database-claim0
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: product_database
-  name: product_database
+    app: inventory-database
+  name: inventory-database
 spec:
   ports:
-    - name: "27017"
-      port: 27017
-      targetPort: 27017
+    - name: "5431"
+      port: 5431
+      targetPort: 5431
   selector:
-    app: product_database
+    app: inventory-database
 status:
-  loadBalancer: {}
+  loadBalancer: { }
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   labels:
-    app: product_database-claim0
-  name: product_database-claim0
+    app: inventory-database-claim0
+  name: inventory-database-claim0
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 100Mi
-status: {}
+status: { }

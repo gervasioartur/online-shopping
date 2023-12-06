@@ -1,45 +1,44 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    kompose.cmd: F:\tools\kompose.exe convert
-    kompose.version: 1.26.1 (a9d05d509)
-  creationTimestamp: null
   labels:
-    app: grafana
-  name: grafana
+    app: broker
+  name: broker
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: grafana
-  strategy:
-    type: Recreate
+      app: broker
+  strategy: { }
   template:
     metadata:
+
       labels:
-        app: grafana
+        app: broker
     spec:
       containers:
         - env:
-            - name: GF_SECURITY_ADMIN_PASSWORD
-              value: admin
-            - name: GF_SECURITY_ADMIN_USER
-              value: admin
-          image: grafana/grafana-oss:8.5.2
-          name: grafana
+            - name: KAFKA_ADVERTISED_LISTENERS
+              value: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://broker:29092
+            - name: KAFKA_BROKER_ID
+              value: "1"
+            - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+              value: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+            - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+              value: "1"
+            - name: KAFKA_TRANSACTION_STATE_LOG_MIN_ISR
+              value: "1"
+            - name: KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR
+              value: "1"
+            - name: KAFKA_ZOOKEEPER_CONNECT
+              value: zookeeper:2181
+          image: confluentinc/cp-kafka:7.0.1
+          name: broker
           ports:
-            - containerPort: 3000
-          resources: {}
-          volumeMounts:
-            - mountPath: /var/lib/grafana
-              name: grafana-claim0
+            - containerPort: 9092
+          resources: { }
       restartPolicy: Always
-      volumes:
-        - name: grafana-claim0
-          persistentVolumeClaim:
-            claimName: grafana-claim0
-status: {}
+status: { }
 ---
 apiVersion: v1
 kind: Service
@@ -49,29 +48,14 @@ metadata:
     kompose.version: 1.26.1 (a9d05d509)
   creationTimestamp: null
   labels:
-    app: grafana
-  name: grafana
+    app: broker
+  name: broker
 spec:
   ports:
-    - name: "3000"
-      port: 3000
-      targetPort: 3000
+    - name: "9092"
+      port: 9092
+      targetPort: 9092
   selector:
-    app: grafana
+    app: broker
 status:
-  loadBalancer: {}
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  creationTimestamp: null
-  labels:
-    app: grafana-claim0
-  name: grafana-claim0
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 100Mi
-status: {}
+  loadBalancer: { }
